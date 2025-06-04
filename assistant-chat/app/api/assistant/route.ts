@@ -97,10 +97,13 @@ export async function POST(req: Request) {
     let response = '';
     try {
       const messages = await openai.beta.threads.messages.list(thread.id);
-      response = messages.data
+      const lastAssistantMsg = messages.data
         .filter((msg) => msg.role === 'assistant')
-        .map((msg) => msg.content[0]?.type === 'text' ? msg.content[0].text.value : '')
-        .join('\n');
+        .at(0); 
+
+      response = lastAssistantMsg && lastAssistantMsg.content[0]?.type === 'text'
+        ? lastAssistantMsg.content[0].text.value
+        : '';
     } catch (err) {
       return NextResponse.json({ error: 'Failed to retrieve messages' }, { status: 500 });
     }
