@@ -2,16 +2,21 @@
   "name": "assistant-chat",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "update-tools": "npx ts-node --project tsconfig.scripts.json assistant-chat/app/api/assistant/scripts/update-assistant-tools.ts"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "@smithery/sdk": "^1.4.3",
     "axios": "^1.9.0",
     "lucide-react": "^0.511.0",
     "next": "15.3.2",
+    "openai": "^4.103.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -23,6 +28,7 @@
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.7",
-    "typescript": "^5"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }
