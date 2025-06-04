@@ -3,6 +3,10 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { SendHorizontal } from 'lucide-react';
+/* * This component is a simple chat interface that allows users to send messages
+ * and receive responses from an AI assistant. It uses the OpenAI API to handle in api/assistant/route.js
+*/
+
 
 export default function Chat() {
   const [query, setQuery] = useState('');
@@ -10,11 +14,12 @@ export default function Chat() {
   const [isLoading, setIsLoading] = useState(false);
   const [dots, setDots] = useState('');
   const bottomRef = useRef<HTMLDivElement | null>(null);
-
+// Scroll to the bottom of the chat when messages change
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+// when the backend is loading, show a loading indicator with dynamic dots
   useEffect(() => {
     if (!isLoading) {
       setDots('');
@@ -37,7 +42,7 @@ export default function Chat() {
 
     return () => clearInterval(interval);
   }, [isLoading]);
-
+// Handle sending a message to the backend and receiving a response
   const handleSend = async () => {
     if (!query.trim()) return;
 
@@ -47,29 +52,23 @@ export default function Chat() {
     setIsLoading(true);
 
     try {
-
-      const response = await axios.post('https://api.openai.com/v1/completions', {
-        model: 'gpt-4',
-        prompt: currentQuery,
-        max_tokens: 100,
-      }, {
-        headers: {
-          'Authorization': ``,
-        }
+      
+      const response = await axios.post('/api/assistant', {
+        query: currentQuery,
       });
 
-      const openAIResponse = response.data.choices[0].text.trim();
+      const openAIResponse = response.data.response;
       setMessages(prev => [...prev, { role: 'chat', content: openAIResponse }]);
     } catch (err) {
       setMessages(prev => [
         ...prev,
-        { role: 'chat', content: '❌ Connection error with OpenAI.' },
+        { role: 'chat', content: 'Error connecting to the backend.' },
       ]);
     } finally {
       setIsLoading(false);
     }
   };
-
+// Render the chat interface with messages, input field, and send button
   return (
     <div className="bg-gray-900 text-gray-100 min-h-screen flex flex-col justify-center items-center p-4">
       <div className="w-full max-w-xl flex flex-col bg-gray-800 rounded-2xl shadow-lg overflow-hidden" style={{ height: '600px' }}>
