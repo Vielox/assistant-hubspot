@@ -4,14 +4,8 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import { createSmitheryUrl } from "@smithery/sdk/shared/config.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 
-/** * This route handles the chat requests to the OpenAI assistant.
- * It creates a thread, adds a user message, executes the assistant,
- *  
- */
-
 export async function POST(req: Request) {
   const assistantId = process.env.ASSISTANT_ID;
-  // connect to OpenAI API
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
   });
@@ -47,8 +41,8 @@ export async function POST(req: Request) {
     // Launch a run
     let run;
     try {
-      run = await openai.beta.threads.runs.create(thread.id, {
-        assistant_id: assistantId,
+      run = await openai.beta.threads.runs.create(thread.id!, {
+        assistant_id: assistantId!,
       });
     } catch (err) {
       return NextResponse.json({ error: 'Failed to launch run' }, { status: 500 });
