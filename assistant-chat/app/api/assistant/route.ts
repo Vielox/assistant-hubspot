@@ -4,18 +4,19 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import { createSmitheryUrl } from "@smithery/sdk/shared/config.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 
-export async function POST(req: Request) {
-  const assistantId = process.env.ASSISTANT_ID;
-  const openai = new OpenAI({
+const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
   });
+
+export async function POST(req: Request) {
+  const assistantId = process.env.ASSISTANT_ID;
 
   try {
     const { query, threadId } = await req.json();
     if (!query) {
       return NextResponse.json({ error: 'Missing message' }, { status: 400 });
     }
-    console.log(`Received threadId: ${threadId}`);
+    //console.log(`Received threadId: ${threadId}`);
     // Use existing thread or create a new one
     let thread;
     if (threadId) {
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: 'Failed to create thread' }, { status: 500 });
       }
     }
-    console.log(`Using thread ID: ${thread.id}`);
+    //console.log(`Using thread ID: ${thread.id}`);
     // Add a message to the thread
     try {
       await openai.beta.threads.messages.create(thread.id, {
