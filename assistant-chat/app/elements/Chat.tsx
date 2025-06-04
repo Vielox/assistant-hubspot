@@ -6,13 +6,12 @@ import { SendHorizontal } from 'lucide-react';
 /* * This component is a simple chat interface that allows users to send messages
  * and receive responses from an AI assistant. It uses the OpenAI API to handle in api/assistant/route.js
 */
-
-
 export default function Chat() {
   const [query, setQuery] = useState('');
   const [messages, setMessages] = useState<{ role: 'user' | 'chat'; content: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [dots, setDots] = useState('');
+  const [threadId, setThreadId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
 // Scroll to the bottom of the chat when messages change
   useEffect(() => {
@@ -42,7 +41,8 @@ export default function Chat() {
 
     return () => clearInterval(interval);
   }, [isLoading]);
-// Handle sending a message to the backend and receiving a response
+
+  // Handle sending a message to the backend and receiving a response
   const handleSend = async () => {
     if (!query.trim()) return;
 
@@ -52,12 +52,15 @@ export default function Chat() {
     setIsLoading(true);
 
     try {
-      
       const response = await axios.post('/api/assistant', {
         query: currentQuery,
+        threadId: threadId, // send threadId if available
       });
 
       const openAIResponse = response.data.response;
+      if (response.data.threadId) {
+        setThreadId(response.data.threadId); // save threadId for next messages
+      }
       setMessages(prev => [...prev, { role: 'chat', content: openAIResponse }]);
     } catch (err) {
       setMessages(prev => [
